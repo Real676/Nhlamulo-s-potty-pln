@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhlamulo's Potty Training Plan</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #2D6A4F; --navy: #1D3557; --plum: #6B3A4C;
+    --brown: #7B4F12; --cream: #FDF6EC; --border: #E8E0D5;
+  }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--cream); min-height: 100vh; color: #2C2C2C; }
+
+  .header { background: linear-gradient(135deg, var(--green) 0%, var(--navy) 100%); padding: 32px 40px 28px; color: white; }
+  .header-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px; }
+  .header-title { font-size: 28px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
+  .header-sub { font-size: 14px; opacity: 0.8; margin-bottom: 18px; }
+
+  /* DOWNLOAD BUTTON */
+  .download-strip {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px;
+  }
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.4);
+    color: white; border-radius: 10px;
+    padding: 10px 18px; font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: 'Segoe UI', Arial, sans-serif;
+    transition: all 0.2s; text-decoration: none;
+  }
+  .dl-btn:hover { background: rgba(255,255,255,0.25); border-color: white; }
+  .dl-btn .icon { font-size: 16px; }
+
+  .layout { display: flex; min-height: calc(100vh - 160px); }
+
+  /* SIDEBAR */
+  .sidebar { width: 210px; min-width: 210px; background: var(--navy); padding: 20px 0; display: flex; flex-direction: column; gap: 2px; }
+  .sidebar-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 10px 20px 4px; font-weight: 700; }
+  .sidebar .tab { display: flex; align-items: center; gap: 10px; padding: 11px 20px; background: transparent; border: none; color: rgba(255,255,255,0.65); font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; font-family: 'Segoe UI', Arial, sans-serif; border-left: 3px solid transparent; transition: all 0.2s; width: 100%; }
+  .sidebar .tab:hover { background: rgba(255,255,255,0.08); color: white; }
+  .sidebar .tab.active { background: rgba(255,255,255,0.12); color: white; border-left-color: #74C69D; }
+  .sidebar .tab .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); flex-shrink: 0; }
+  .sidebar .tab.active .dot { background: #74C69D; }
+  .sidebar-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 8px 16px; }
+
+  /* MOBILE TABS */
+  .mobile-tabs { display: none; background: var(--navy); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 0 8px; }
+  .mobile-tabs::-webkit-scrollbar { display: none; }
+  .mobile-tabs .tab { background: transparent; color: rgba(255,255,255,0.6); border: none; padding: 11px 13px; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px 8px 0 0; white-space: nowrap; font-family: 'Segoe UI', Arial, sans-serif; display: inline-block; transition: all 0.2s; }
+  .mobile-tabs .tab.active { background: var(--cream); color: var(--navy); }
+
+  .content { flex: 1; overflow-y: auto; padding: 28px 32px 60px; max-width: 900px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .section-header { border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; color: white; }
+  .section-header h2 { font-size: 20px; font-weight: 800; }
+  .section-header p { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+  .day-badge { display: inline-flex; align-items: center; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 12px; font-size: 11px; margin-top: 8px; font-weight: 600; }
+
+  .progress-wrap { margin-bottom: 18px; }
+  .progress-label { font-size: 11px; color: #888; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .progress-track { background: var(--border); border-radius: 20px; height: 7px; overflow: hidden; }
+  .progress-fill { height: 7px; border-radius: 20px; transition: width 0.35s ease; }
+
+  .steps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+  .step { background: white; border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
+  .step:hover { border-color: #aaa; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .step.done { background: #F0FFF4; }
+  .checkbox { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #CCC; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; font-size: 13px; color: white; font-weight: 700; transition: all 0.2s; }
+  .step-content { flex: 1; min-width: 0; }
+  .time-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 3px 9px; border-radius: 20px; margin-bottom: 6px; }
+  .step-action { font-size: 13px; color: #2C2C2C; line-height: 1.5; margin-bottom: 7px; }
+  .step.done .step-action { color: #aaa; text-decoration: line-through; }
+  .reminder-badge { font-size: 10px; padding: 3px 9px; border-radius: 6px; display: inline-block; line-height: 1.4; }
+
+  .section-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-bottom: 14px; }
+  .cal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 28px; }
+  .cal-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .cal-label { font-size: 12px; color: #333; flex: 1; }
+  .cal-time { font-size: 12px; font-weight: 800; color: var(--navy); text-align: right; }
+  .cal-repeat { font-size: 10px; color: #999; text-align: right; }
+
+  /* INLINE DOWNLOAD BOX */
+  .cal-download-box {
+    background: linear-gradient(135deg, #1D3557, #2D6A4F);
+    border-radius: 14px; padding: 20px 22px; margin-bottom: 28px;
+    color: white;
+  }
+  .cal-download-box h3 { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
+  .cal-download-box p { font-size: 12px; opacity: 0.85; line-height: 1.6; margin-bottom: 14px; }
+  .cal-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cal-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.4);
+    color: white; border-radius: 10px; padding: 9px 16px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    font-family: 'Segoe UI', Arial, sans-serif; transition: all 0.2s;
+  }
+  .cal-btn:hover { background: rgba(255,255,255,0.28); }
+
+  .rules-box { background: #FFF3CD; border: 2px solid #FFD700; border-radius: 14px; padding: 18px 20px; margin-bottom: 24px; }
+  .rules-title { font-weight: 800; font-size: 14px; color: #7B4F12; margin-bottom: 12px; }
+  .rule { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; color: #5C3D11; line-height: 1.5; align-items: flex-start; }
+  .rule-num { font-weight: 800; flex-shrink: 0; min-width: 18px; }
+
+  .timeline-box { background: linear-gradient(135deg, var(--green), var(--navy)); border-radius: 14px; padding: 22px; color: white; text-align: center; margin-bottom: 24px; }
+  .timeline-box .icon { font-size: 28px; margin-bottom: 10px; }
+  .timeline-box h3 { font-size: 16px; font-weight: 800; margin-bottom: 10px; }
+  .timeline-box p { font-size: 13px; opacity: 0.85; line-height: 1.8; }
+  .timeline-box strong { opacity: 1; font-weight: 800; }
+
+  @media (max-width: 768px) {
+    .header { padding: 22px 16px 18px; }
+    .header-title { font-size: 20px; }
+    .sidebar { display: none; }
+    .mobile-tabs { display: block; }
+    .layout { flex-direction: column; }
+    .content { padding: 16px 14px 60px; max-width: 100%; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .cal-grid { grid-template-columns: 1fr; }
+    .section-header h2 { font-size: 17px; }
+    .cal-btns { flex-direction: column; }
+  }
+  @media (min-width: 769px) { .mobile-tabs { display: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Nhlamulo Lesedi Nyasha · Potty Training Plan</div>
+  <div class="header-title">Step-by-Step Daily Plan 🎯</div>
+  <div class="header-sub">Built around your real schedule · 2–4 weeks to freedom 🎉</div>
+  <div class="download-strip">
+    <button class="dl-btn" onclick="downloadICS()">
+      <span class="icon">📅</span> Download Full Calendar (.ics)
+    </button>
+    <button class="dl-btn" onclick="openGoogleCalInfo()">
+      <span class="icon">📲</span> How to Import to Google / Outlook
+    </button>
+  </div>
+</div>
+
+<div class="mobile-tabs">
+  <button class="tab active" onclick="switchTab('monday',this)">MON</button>
+  <button class="tab" onclick="switchTab('tuesday',this)">TUE</button>
+  <button class="tab" onclick="switchTab('wednesday',this)">WED</button>
+  <button class="tab" onclick="switchTab('thursday',this)">THU</button>
+  <button class="tab" onclick="switchTab('friday',this)">FRI</button>
+  <button class="tab" onclick="switchTab('saturday',this)">SAT</button>
+  <button class="tab" onclick="switchTab('sunday',this)">SUN</button>
+  <button class="tab" onclick="switchTab('grandma',this)">👵 Gogo</button>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-label">Weekdays</div>
+    <button class="tab active" onclick="switchTab('monday',this)"><span class="dot"></span>Monday</button>
+    <button class="tab" onclick="switchTab('tuesday',this)"><span class="dot"></span>Tuesday</button>
+    <button class="tab" onclick="switchTab('wednesday',this)"><span class="dot"></span>Wednesday</button>
+    <button class="tab" onclick="switchTab('thursday',this)"><span class="dot"></span>Thursday</button>
+    <button class="tab" onclick="switchTab('friday',this)"><span class="dot"></span>Friday</button>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">Weekend</div>
+    <button class="tab" onclick="switchTab('saturday',this)"><span class="dot"></span>Saturday</button>
+    <button class="tab" onclick="switchTab('sunday',this)"><span class="dot"></span>Sunday</button>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">Support</div>
+    <button class="tab" onclick="switchTab('grandma',this)"><span class="dot"></span>👵 Gogo's Routine</button>
+  </nav>
+
+  <main class="content">
+    <div id="panel-monday" class="panel active"></div>
+    <div id="panel-tuesday" class="panel"></div>
+    <div id="panel-wednesday" class="panel"></div>
+    <div id="panel-thursday" class="panel"></div>
+    <div id="panel-friday" class="panel"></div>
+    <div id="panel-saturday" class="panel"></div>
+    <div id="panel-sunday" class="panel"></div>
+    <div id="panel-grandma" class="panel"></div>
+  </main>
+</div>
+
+<!-- IMPORT INSTRUCTIONS MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;padding:28px;max-width:480px;width:90%;position:relative;">
+    <button onclick="document.getElementById('modal').style.display='none'" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;">✕</button>
+    <h2 style="font-size:17px;font-weight:800;margin-bottom:14px;color:#1D3557;">📅 How to Import the Calendar</h2>
+    <div style="font-size:13px;line-height:1.8;color:#333;">
+      <strong>Google Calendar:</strong><br>
+      1. Download the .ics file<br>
+      2. Open Google Calendar on desktop<br>
+      3. Click ⚙️ Settings → Import &amp; Export<br>
+      4. Click "Select file" → choose the .ics file<br>
+      5. Choose your calendar → Import ✅<br><br>
+      <strong>Microsoft Outlook:</strong><br>
+      1. Download the .ics file<br>
+      2. Open Outlook → File → Open &amp; Export<br>
+      3. Click "Import/Export" → Import an iCalendar<br>
+      4. Select the .ics file → Open ✅<br><br>
+      <strong>iPhone / Android:</strong><br>
+      1. Download the .ics file to your phone<br>
+      2. Tap the file — it opens your calendar app automatically<br>
+      3. Tap "Add All" to import all reminders ✅
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───
+const weekdaySteps = [
+  { time:"6:30 PM", action:"Arrive home — remove diaper immediately. Underwear or bare bottom only.", reminder:"📅 Alarm: 'Diaper off – home time'" },
+  { time:"6:45 PM", action:"First potty sit. Make it fun — sing, clap, encourage every attempt.", reminder:"📅 Alarm: 'Potty time 1'" },
+  { time:"7:30 PM", action:"Second potty sit. Offer water or juice beforehand.", reminder:"📅 Alarm: 'Potty time 2'" },
+  { time:"8:15 PM", action:"Third potty sit. After dinner is the highest chance of success.", reminder:"📅 Alarm: 'Potty time 3'" },
+  { time:"9:00 PM", action:"Bath time — always sit him on the potty before the bath. No exceptions.", reminder:"📅 Alarm: 'Pre-bath potty'" },
+  { time:"9:30 PM", action:"Bedtime — put diaper on for sleep only. Celebrate the whole evening! 🎉", reminder:"📅 Alarm: 'Bedtime routine'" },
+];
+const saturdaySteps = [
+  { time:"7:00 AM", action:"Wake up — remove overnight diaper immediately. Straight to potty.", reminder:"📅 Alarm: 'Morning potty'" },
+  { time:"7:45 AM", action:"After breakfast — potty sit. Full tummy = higher chance.", reminder:"📅 Alarm: 'Post-breakfast potty'" },
+  { time:"8:30 AM", action:"Potty sit. Offer juice or water between sessions.", reminder:"📅 Alarm: 'Potty 8:30'" },
+  { time:"9:15 AM", action:"Potty sit. Play, sing, make it a game. Clap every attempt.", reminder:"📅 Alarm: 'Potty 9:15'" },
+  { time:"10:00 AM", action:"Potty sit. If he goes — sticker, clap, big praise!", reminder:"📅 Alarm: 'Potty 10:00'" },
+  { time:"10:45 AM", action:"Potty sit. Accidents = stay CALM. Say 'It's okay, let's try again.'", reminder:"📅 Alarm: 'Potty 10:45'" },
+  { time:"11:30 AM", action:"Pre-lunch potty sit.", reminder:"📅 Alarm: 'Pre-lunch potty'" },
+  { time:"12:15 PM", action:"After lunch — potty sit. Another high-chance moment.", reminder:"📅 Alarm: 'Post-lunch potty'" },
+  { time:"1:00 PM", action:"Nap time — diaper on for nap ONLY.", reminder:"📅 Alarm: 'Nap time'" },
+  { time:"3:00 PM", action:"Wake from nap — diaper off immediately. Back to training.", reminder:"📅 Alarm: 'Post-nap potty'" },
+  { time:"5:00 PM", action:"Continue 45-minute potty intervals through the afternoon.", reminder:"📅 Alarm: 'Afternoon potty'" },
+  { time:"7:00 PM", action:"Evening wind-down — follow the weekday evening routine.", reminder:"📅 Follow weekday steps" },
+];
+const sundaySteps = [
+  { time:"All Day", action:"Repeat Saturday's full routine exactly. Consistency is everything.", reminder:"📅 Copy all Saturday alarms" },
+  { time:"5:00 PM", action:"Sit with Grandma. Share what worked and what didn't. Show her the routine.", reminder:"📅 Reminder: 'Brief Grandma'" },
+  { time:"5:30 PM", action:"Send Grandma a voice note recap. Keep it short — just the potty times.", reminder:"📅 Reminder: 'Voice note to Grandma'" },
+  { time:"6:00 PM", action:"Write a sticky note with potty times and place it on the bathroom door for the week.", reminder:"✏️ Prepare sticky note" },
+];
+const grandmaSteps = [
+  { time:"Wake Up", action:"Remove overnight diaper. Sit Nhlamulo on the potty before anything else — every single morning.", reminder:"📌 Sticky note on bathroom door" },
+  { time:"After Breakfast", action:"Potty sit — every morning without fail.", reminder:"📅 Alarm: 'Post-breakfast potty'" },
+  { time:"10:00 AM", action:"Mid-morning potty sit.", reminder:"📅 Alarm: '10am potty'" },
+  { time:"12:00 PM", action:"Before lunch — potty sit.", reminder:"📅 Alarm: '12pm potty'" },
+  { time:"1:00 PM", action:"After lunch potty sit. Full tummy = best chance.", reminder:"📅 Alarm: '1pm potty'" },
+  { time:"Before Nap", action:"Potty sit — then diaper on for nap only.", reminder:"📅 Alarm: 'Pre-nap potty'" },
+  { time:"After Nap", action:"Remove diaper immediately. Potty sit before anything else.", reminder:"📅 Alarm: 'Post-nap potty'" },
+  { time:"Before Bath", action:"Always potty sit before bath — no exceptions.", reminder:"📅 Alarm: 'Pre-bath potty'" },
+];
+const calItems = [
+  { label:"Arrive home – diaper off", time:"18:30", repeat:"Mon–Fri" },
+  { label:"Evening potty round 1", time:"18:45", repeat:"Mon–Fri" },
+  { label:"Evening potty round 2", time:"19:30", repeat:"Mon–Fri" },
+  { label:"Evening potty round 3", time:"20:15", repeat:"Mon–Fri" },
+  { label:"Pre-bath potty", time:"21:00", repeat:"Mon–Fri" },
+  { label:"Morning potty – Grandma", time:"07:00", repeat:"Mon–Fri" },
+  { label:"Post-breakfast – Grandma", time:"07:45", repeat:"Mon–Fri" },
+  { label:"Mid-morning – Grandma", time:"10:00", repeat:"Mon–Fri" },
+  { label:"Lunch potty – Grandma", time:"12:00", repeat:"Mon–Fri" },
+  { label:"Post-nap – Grandma", time:"15:00", repeat:"Mon–Fri" },
+  { label:"Full day training – no diaper", time:"07:00", repeat:"Sat & Sun" },
+  { label:"Brief Grandma for the week", time:"17:00", repeat:"Every Sunday" },
+];
+const dayConfig = {
+  monday:    { label:"Monday",    sub:"Evening Routine · From 6:30pm", color:"#2D6A4F", accent:"#B7E4C7", steps:weekdaySteps, type:"weekday" },
+  tuesday:   { label:"Tuesday",   sub:"Evening Routine · From 6:30pm", color:"#2D6A4F", accent:"#B7E4C7", steps:weekdaySteps, type:"weekday" },
+  wednesday: { label:"Wednesday", sub:"Evening Routine · From 6:30pm", color:"#2D6A4F", accent:"#B7E4C7", steps:weekdaySteps, type:"weekday" },
+  thursday:  { label:"Thursday",  sub:"Evening Routine · From 6:30pm", color:"#2D6A4F", accent:"#B7E4C7", steps:weekdaySteps, type:"weekday" },
+  friday:    { label:"Friday",    sub:"Evening Routine · From 6:30pm",  color:"#2D6A4F", accent:"#B7E4C7", steps:weekdaySteps, type:"weekday" },
+  saturday:  { label:"Saturday — Core Training Day", sub:"Full Day Focus · Most important day", color:"#1D3557", accent:"#A8DADC", steps:saturdaySteps, type:"weekend" },
+  sunday:    { label:"Sunday — Reinforcement + Handover", sub:"Repeat Saturday · Brief Grandma before week starts", color:"#6B3A4C", accent:"#F4B8C8", steps:sundaySteps, type:"weekend" },
+  grandma:   { label:"Grandma's Weekday Routine", sub:"Monday–Friday · Non-negotiable anchor points", color:"#7B4F12", accent:"#FFD6A5", steps:grandmaSteps, type:"grandma" },
+};
+const goldenRules = [
+  "Diaper OFF the moment you arrive home — every time, no exceptions",
+  "Diaper for sleep ONLY — nap and bedtime",
+  "Hide big diaper packs from Grandma — replace with training pants",
+  "Accidents = CALM. Never scold. Say \"It's okay, let's try again\"",
+  "Celebrate EVERY attempt — not just the successes",
+  "Brief Grandma every Sunday before the week starts",
+];
+const checked = {};
+
+// ─── ICS GENERATOR ───
+function pad(n){ return String(n).padStart(2,'0'); }
+function icsDate(y,mo,d,h,mi){
+  return `${y}${pad(mo)}${pad(d)}T${pad(h)}${pad(mi)}00`;
+}
+function makeUID(){ return Math.random().toString(36).substr(2,9)+'@nhlamulo-plan'; }
+
+function downloadICS(){
+  // Start from Monday 18 May 2026
+  const events = [
+    // ── Weekday evening (Mon-Fri) ──
+    { summary:"🧒 Nhlamulo – Arrive home, diaper off",       dtstart:icsDate(2026,5,18,18,30), rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"Remove diaper immediately when you get home. Underwear or bare bottom only." },
+    { summary:"🚽 Nhlamulo – Potty time 1",                  dtstart:icsDate(2026,5,18,18,45), rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"First potty sit. Sing, clap, make it fun." },
+    { summary:"🚽 Nhlamulo – Potty time 2",                  dtstart:icsDate(2026,5,18,19,30), rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"Second potty sit. Offer water or juice first." },
+    { summary:"🚽 Nhlamulo – Potty time 3 (post-dinner)",    dtstart:icsDate(2026,5,18,20,15), rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"Third potty sit. After dinner = highest chance." },
+    { summary:"🛁 Nhlamulo – Pre-bath potty",                dtstart:icsDate(2026,5,18,21,0),  rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"Always potty before bath — no exceptions." },
+    // ── Grandma weekday ──
+    { summary:"👵 Gogo – Morning potty (Nhlamulo)",          dtstart:icsDate(2026,5,18,7,0),   rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"Remove overnight diaper. Potty sit before anything else." },
+    { summary:"👵 Gogo – Post-breakfast potty",              dtstart:icsDate(2026,5,18,7,45),  rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"Potty sit right after breakfast." },
+    { summary:"👵 Gogo – Mid-morning potty",                 dtstart:icsDate(2026,5,18,10,0),  rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"Mid-morning potty sit." },
+    { summary:"👵 Gogo – Lunch potty",                       dtstart:icsDate(2026,5,18,12,0),  rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"Before AND after lunch potty sit." },
+    { summary:"👵 Gogo – Post-nap potty",                    dtstart:icsDate(2026,5,18,15,0),  rrule:"FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR", duration:"PT15M", desc:"Remove nap diaper immediately. Potty sit." },
+    // ── Weekend full day ──
+    { summary:"🚽 Nhlamulo – Weekend morning potty",         dtstart:icsDate(2026,5,16,7,0),   rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"Wake up. Remove overnight diaper. Straight to potty." },
+    { summary:"🚽 Nhlamulo – Post-breakfast potty",          dtstart:icsDate(2026,5,16,7,45),  rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"Full tummy = higher chance." },
+    { summary:"🚽 Nhlamulo – Potty 8:30",                    dtstart:icsDate(2026,5,16,8,30),  rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"45-min interval potty sit." },
+    { summary:"🚽 Nhlamulo – Potty 9:15",                    dtstart:icsDate(2026,5,16,9,15),  rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"Keep making it fun. Clap every attempt." },
+    { summary:"🚽 Nhlamulo – Potty 10:00",                   dtstart:icsDate(2026,5,16,10,0),  rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"If he goes — sticker, clap, big praise!" },
+    { summary:"🚽 Nhlamulo – Potty 10:45",                   dtstart:icsDate(2026,5,16,10,45), rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"Accidents = calm. Stay positive." },
+    { summary:"🚽 Nhlamulo – Pre-lunch potty",               dtstart:icsDate(2026,5,16,11,30), rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"Pre-lunch potty sit." },
+    { summary:"🚽 Nhlamulo – Post-lunch potty",              dtstart:icsDate(2026,5,16,12,15), rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"After lunch = high-chance moment." },
+    { summary:"🚽 Nhlamulo – Post-nap potty",                dtstart:icsDate(2026,5,16,15,0),  rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"Remove nap diaper immediately. Back to training." },
+    { summary:"🚽 Nhlamulo – Afternoon potty",               dtstart:icsDate(2026,5,16,17,0),  rrule:"FREQ=WEEKLY;BYDAY=SA,SU",          duration:"PT15M", desc:"Continue 45-min intervals through afternoon." },
+    // ── Sunday brief Grandma ──
+    { summary:"👵 Gogo – Weekly briefing (Nhlamulo progress)",dtstart:icsDate(2026,5,17,17,0), rrule:"FREQ=WEEKLY;BYDAY=SU",             duration:"PT30M", desc:"Tell Grandma what worked this week. Show the routine. Write sticky note for bathroom door." },
+  ];
+
+  let ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Nhlamulo Potty Training Plan//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n`;
+
+  events.forEach(ev => {
+    ics += `BEGIN:VEVENT\r\n`;
+    ics += `UID:${makeUID()}\r\n`;
+    ics += `DTSTART;TZID=Africa/Johannesburg:${ev.dtstart}\r\n`;
+    ics += `DURATION:${ev.duration}\r\n`;
+    ics += `RRULE:${ev.rrule}\r\n`;
+    ics += `SUMMARY:${ev.summary}\r\n`;
+    ics += `DESCRIPTION:${ev.desc}\r\n`;
+    ics += `BEGIN:VALARM\r\nTRIGGER:-PT5M\r\nACTION:DISPLAY\r\nDESCRIPTION:${ev.summary}\r\nEND:VALARM\r\n`;
+    ics += `END:VEVENT\r\n`;
+  });
+
+  ics += `END:VCALENDAR`;
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'Nhlamulo-Potty-Training-Plan.ics';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+function openGoogleCalInfo(){
+  document.getElementById('modal').style.display = 'flex';
+}
+
+// ─── BUILD PANELS ───
+function buildPanel(tabKey) {
+  const { label, sub, color, accent, steps, type } = dayConfig[tabKey];
+  const panel = document.getElementById('panel-' + tabKey);
+  if (!panel) return;
+  const done = steps.filter((_,i) => !!checked[tabKey+'-'+i]).length;
+  const total = steps.length;
+  const pct = Math.round((done/total)*100);
+  const isWeekday = type === 'weekday';
+
+  let html = `
+    <div class="section-header" style="background:${color};">
+      <h2>${label}</h2><p>${sub}</p>
+      ${isWeekday ? `<div class="day-badge">📅 ${label} Evening Checklist</div>` : ''}
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">${done} of ${total} steps completed · ${pct}%</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${color};"></div></div>
+    </div>
+    <div class="steps-grid">`;
+
+  steps.forEach((step,i) => {
+    const key = tabKey+'-'+i;
+    const isDone = !!checked[key];
+    html += `
+      <div class="step${isDone?' done':''}" onclick="toggleStep('${tabKey}',${i})">
+        <div class="checkbox" style="background:${isDone?color:'transparent'};border-color:${isDone?color:'#CCC'};">${isDone?'✓':''}</div>
+        <div class="step-content">
+          <span class="time-badge" style="background:${accent};color:${color};">${step.time}</span>
+          <div class="step-action">${step.action}</div>
+          <span class="reminder-badge" style="background:${accent};color:${color};">${step.reminder}</span>
+        </div>
+      </div>`;
+  });
+  html += `</div>`;
+
+  if (tabKey === 'monday') {
+    html += `
+      <div class="cal-download-box">
+        <h3>📅 Save All Reminders to Your Calendar</h3>
+        <p>Download the .ics file and import it into Google Calendar, Outlook, or your phone's calendar app. All 21 recurring reminders will be added automatically.</p>
+        <div class="cal-btns">
+          <button class="cal-btn" onclick="downloadICS()">⬇️ Download .ics File</button>
+          <button class="cal-btn" onclick="openGoogleCalInfo()">📖 How to Import</button>
+        </div>
+      </div>
+      <div class="section-title">📅 All Reminders Overview</div>
+      <div class="cal-grid">`;
+    calItems.forEach(item => {
+      html += `<div class="cal-item"><span class="cal-label">${item.label}</span><div><div class="cal-time">${item.time}</div><div class="cal-repeat">${item.repeat}</div></div></div>`;
+    });
+    html += `</div>`;
+  }
+
+  if (isWeekday) {
+    html += `<div class="rules-box"><div class="rules-title">🔑 Golden Rules — Never Break These</div>`;
+    goldenRules.forEach((rule,i) => {
+      html += `<div class="rule"><span class="rule-num">${i+1}.</span>${rule}</div>`;
+    });
+    html += `</div>`;
+  }
+
+  if (tabKey === 'friday') {
+    html += `
+      <div class="timeline-box">
+        <div class="icon">🎯</div>
+        <h3>Expected Timeline</h3>
+        <p>Week 1 — Awareness builds, more communication<br>
+        Week 2 — Fewer accidents, stronger signals<br>
+        Week 3 — Consistent success, diaper-free days<br>
+        Week 4 — Independence established 🎉<br><br>
+        <strong>In December he responded in under 3 hours.<br>He is ready. You just need to show up. 💪</strong></p>
+      </div>`;
+  }
+
+  panel.innerHTML = html;
+}
+
+function toggleStep(tabKey, i) {
+  checked[tabKey+'-'+i] = !checked[tabKey+'-'+i];
+  buildPanel(tabKey);
+}
+
+function switchTab(tabKey, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+tabKey).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => {
+    if(t.getAttribute('onclick') && t.getAttribute('onclick').includes("'"+tabKey+"'")) t.classList.add('active');
+  });
+}
+
+Object.keys(dayConfig).forEach(buildPanel);
+</script>
+</body>
+</html>
